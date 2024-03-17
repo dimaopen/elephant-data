@@ -2,6 +2,7 @@ import {fetchMerlion} from "./fetcher/merlion";
 
 const {app, BrowserWindow, ipcMain} = require('electron');
 import Store from 'electron-store';
+import os from 'os'
 
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -24,20 +25,21 @@ const createWindow = () => {
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
     mainWindow.removeMenu()
 
-    // Open the DevTools.
     // mainWindow.webContents.openDevTools();
     return mainWindow
 };
 
 const store = new Store({encryptionKey: 'do_not_consider_secure'});
+
 function getProviderSettings() {
-    console.info("get all settings")
+    // console.info("get provider settings")
     return store.get('providers')
 }
 
 const providers = {
     'merlion': fetchMerlion,
 }
+
 function fetchProvider(event, provider, providerData) {
     const providerFunction = providers[provider];
     if (!providerFunction)
@@ -50,9 +52,17 @@ function fetchProvider(event, provider, providerData) {
     providerFunction(providerData, filePath)
 }
 
-async function saveFileDialog() {
+async function saveFileDialog(event, curPath) {
     const {dialog} = require('electron')
-    return await dialog.showSaveDialog(mainWindow, {title: "Сохранить данные", properties: ['createDirectory']})
+    if (!curPath) {
+        curPath = os.homedir()
+    }
+    return await dialog.showSaveDialog(mainWindow,
+        {
+            title: "Сохранить данные",
+            defaultPath: curPath,
+            properties: ['createDirectory']
+        });
 }
 
 let mainWindow

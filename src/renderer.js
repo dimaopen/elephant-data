@@ -38,10 +38,11 @@ function attachProviderToForm(providerId, func) {
         })
     document.querySelector(`#${providerId} button.file-path-btn`)
         .addEventListener('click', async (e) => {
-            // e.preventDefault();
-            const result = await window.electron.saveFileDialog()
-            if (result.filePaths[0]) {
-                document.querySelector(`#${providerId} input[name='filePath']`).value = result.filePaths[0]
+            const filePathInput = document.querySelector(`#${providerId} input[name='filePath']`);
+            const result = await window.electron.saveFileDialog(filePathInput.value)
+            // console.info(result)
+            if (!result.canceled && result.filePath) {
+                filePathInput.value = result.filePath
             }
         })
 }

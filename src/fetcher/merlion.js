@@ -3,7 +3,6 @@ import {finished} from "stream/promises";
 import {fetch, CookieJar} from "node-fetch-cookies";
 
 export async function fetchMerlion(formData, filePath) {
-    console.info("fetch merlion %o", formData)
     const cookieJar = new CookieJar();
     const resp = await fetch(cookieJar, "https://b2b.merlion.com/api/login", {
         credentials: "same-origin",
@@ -19,7 +18,6 @@ export async function fetchMerlion(formData, filePath) {
     });
     let respBody = await resp.json();
     const token = respBody.csrf_token
-    console.info('token %s', token)
 
     const prices = await fetch(cookieJar, "https://b2b.merlion.com/api/v1/pricelists", {
         credentials: "include",
