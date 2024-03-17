@@ -8,6 +8,9 @@ contextBridge.exposeInMainWorld(
         getProviderSettings: () => {
             return ipcRenderer.invoke('get-provider-settings')
         },
+        saveFileDialog: () => {
+            return ipcRenderer.invoke('save-file-dialog')
+        },
         fetchProvider: (provider, formData) => {
             ipcRenderer.invoke('fetch-provider', provider, formData)
         },

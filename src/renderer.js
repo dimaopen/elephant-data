@@ -36,6 +36,14 @@ function attachProviderToForm(providerId, func) {
             const obj = Object.fromEntries(formData);
             func(providerId, obj);
         })
+    document.querySelector(`#${providerId} button.file-path-btn`)
+        .addEventListener('click', async (e) => {
+            // e.preventDefault();
+            const result = await window.electron.saveFileDialog()
+            if (result.filePaths[0]) {
+                document.querySelector(`#${providerId} input[name='filePath']`).value = result.filePaths[0]
+            }
+        })
 }
 
 // We attach all our forms to provider fetch methods

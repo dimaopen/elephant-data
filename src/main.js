@@ -12,7 +12,7 @@ if (require('electron-squirrel-startup')) {
 const createWindow = () => {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
-        width: 1600,
+        width: 850,
         height: 600,
         webPreferences: {
             preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
@@ -25,7 +25,8 @@ const createWindow = () => {
     mainWindow.removeMenu()
 
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
+    return mainWindow
 };
 
 const store = new Store({encryptionKey: 'do_not_consider_secure'});
@@ -49,18 +50,24 @@ function fetchProvider(event, provider, providerData) {
     providerFunction(providerData, filePath)
 }
 
+async function saveFileDialog() {
+    const {dialog} = require('electron')
+    return await dialog.showSaveDialog(mainWindow, {title: "Сохранить данные", properties: ['createDirectory']})
+}
+
+let mainWindow
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-    console.debug(app.getPath('userData'))
     const providers = store.get('providers')
     if (!providers) {
         store.set('providers', {});
     }
     ipcMain.handle('get-provider-settings', getProviderSettings)
+    ipcMain.handle('save-file-dialog', saveFileDialog)
     ipcMain.handle('fetch-provider', fetchProvider)
-    createWindow()
+    mainWindow = createWindow()
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
