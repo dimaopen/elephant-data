@@ -5,11 +5,11 @@ const {contextBridge, ipcRenderer} = require('electron/renderer')
 contextBridge.exposeInMainWorld(
     'electron',
     {
-        getAllSettings: () => {
-            return ipcRenderer.invoke('get-all-settings')
+        getProviderSettings: () => {
+            return ipcRenderer.invoke('get-provider-settings')
         },
-        fetchMerlion: (formData) => {
-            ipcRenderer.invoke('fetch-merlion', formData)
+        fetchProvider: (provider, formData) => {
+            ipcRenderer.invoke('fetch-provider', provider, formData)
         },
     }
 )

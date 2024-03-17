@@ -28,22 +28,38 @@ const createWindow = () => {
     mainWindow.webContents.openDevTools();
 };
 
-async function getAllSettings() {
+const store = new Store({encryptionKey: 'do_not_consider_secure'});
+function getProviderSettings() {
     console.info("get all settings")
-    return {
-        merlion: {
-            clientNo: "12333",
-            clientLogin: "shurik"
-        }
-    }
+    return store.get('providers')
+}
+
+const providers = {
+    'merlion': fetchMerlion,
+}
+function fetchProvider(event, provider, providerData) {
+    const providerFunction = providers[provider];
+    if (!providerFunction)
+        throw new Error(`No provider found for ${provider}`);
+    const providerSettings = store.get('providers');
+    providerSettings[provider] = providerData;
+    store.set('providers', providerSettings);
+    const filePath = providerData.filePath
+    delete providerData.filePath
+    providerFunction(providerData, filePath)
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-    ipcMain.handle('get-all-settings', getAllSettings)
-    ipcMain.handle('fetch-merlion', fetchMerlion)
+    console.debug(app.getPath('userData'))
+    const providers = store.get('providers')
+    if (!providers) {
+        store.set('providers', {});
+    }
+    ipcMain.handle('get-provider-settings', getProviderSettings)
+    ipcMain.handle('fetch-provider', fetchProvider)
     createWindow()
 });
 

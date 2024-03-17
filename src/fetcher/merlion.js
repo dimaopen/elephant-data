@@ -2,7 +2,7 @@ import fs from "fs";
 import {finished} from "stream/promises";
 import {fetch, CookieJar} from "node-fetch-cookies";
 
-export async function fetchMerlion(event, formData) {
+export async function fetchMerlion(formData, filePath) {
     console.info("fetch merlion %o", formData)
     const cookieJar = new CookieJar();
     const resp = await fetch(cookieJar, "https://b2b.merlion.com/api/login", {
@@ -13,7 +13,7 @@ export async function fetchMerlion(event, formData) {
             "content-type": "application/json",
             referrer: "https://b2b.merlion.com/",
         },
-        body: JSON.serialize(formData),
+        body: JSON.stringify(formData),
         method: "POST",
         mode: "cors"
     });
@@ -48,8 +48,7 @@ export async function fetchMerlion(event, formData) {
         mode: "cors"
     });
 
-    const homedir = require('os').homedir();
-    const fileStream = fs.createWriteStream(`${homedir}/Downloads/output1.zip`);
+    const fileStream = fs.createWriteStream(filePath);
     const { body } = priceResp;
     await finished(body.pipe(fileStream))
 }

@@ -27,24 +27,23 @@
  */
 import './index.css';
 
-function attachSubmitClick(id, func) {
-    document.querySelector(`#${id} input[type="submit"]`)
+function attachProviderToForm(providerId, func) {
+    document.querySelector(`#${providerId} input[type="submit"]`)
         .addEventListener('click', (e) => {
             e.preventDefault();
-            const form = document.getElementById(id)
+            const form = document.getElementById(providerId)
             const formData = new FormData(form)
             const obj = Object.fromEntries(formData);
-            func(obj);
+            func(providerId, obj);
         })
 }
 
 // We attach all our forms to provider fetch methods
-attachSubmitClick('merlion', window.electron.fetchMerlion)
+attachProviderToForm('merlion', window.electron.fetchProvider)
 
 // Get all the provider settings (credentials mainly) and set the values to our forms
-const allSettings = await window.electron.getAllSettings()
-console.info(allSettings)
-const providers = Object.entries(allSettings)
+const providerSettings = await window.electron.getProviderSettings()
+const providers = Object.entries(providerSettings)
 for (const [provider, data] of providers) {
     const form = document.getElementById(provider)
     for (const [key, val] of Object.entries(data)) {
