@@ -28,7 +28,7 @@
 import './index.css';
 
 function attachProviderToForm(providerId, func) {
-    document.querySelector(`#${providerId} input[type="submit"]`)
+    document.querySelector(`#${providerId} button.submit-btn`)
         .addEventListener('click', async (e) => {
             e.preventDefault();
             const form = document.getElementById(providerId)
@@ -39,10 +39,11 @@ function attachProviderToForm(providerId, func) {
             document.querySelector(`#footer`).textContent = `Скачали: ${result}`
         })
     document.querySelector(`#${providerId} button.file-path-btn`)
-        .addEventListener('click', async () => {
+        .addEventListener('click', async (e) => {
+            e.preventDefault()
             const filePathInput = document.querySelector(`#${providerId} input[name='filePath']`);
             const result = await window.electron.saveFileDialog(filePathInput.value)
-            // console.info(result)
+            console.info(result)
             if (!result.canceled && result.filePath) {
                 filePathInput.value = result.filePath
             }
