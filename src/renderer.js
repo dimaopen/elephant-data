@@ -31,12 +31,14 @@ function attachProviderToForm(providerId, func) {
     document.querySelector(`#${providerId} button.submit-btn`)
         .addEventListener('click', async (e) => {
             e.preventDefault();
+            e.target.disabled = 'disabled'
             const form = document.getElementById(providerId)
             const formData = new FormData(form)
             const obj = Object.fromEntries(formData);
             document.querySelector(`#footer`).textContent = `Скачиваем ${providerId} ...`
             const result = await func(providerId, obj);
             document.querySelector(`#footer`).textContent = `Скачали: ${result}`
+            e.target.disabled = false
         })
     document.querySelector(`#${providerId} button.file-path-btn`)
         .addEventListener('click', async (e) => {

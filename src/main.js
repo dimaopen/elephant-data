@@ -49,7 +49,12 @@ async function fetchProvider(event, provider, providerData) {
     store.set('providers', providerSettings);
     const filePath = providerData.filePath
     delete providerData.filePath
-    return await providerFunction(providerData, filePath)
+    try {
+        return await providerFunction(providerData, filePath)
+    } catch (e) {
+        console.error(e);
+        return e.message
+    }
 }
 
 async function saveFileDialog(event, curPath) {

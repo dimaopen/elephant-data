@@ -17,7 +17,16 @@ export async function fetchMerlion(formData, filePath) {
         method: "POST",
         mode: "cors"
     });
+    if (resp.status >= 500) {
+        return `Ошибка сервера ${resp.statusText}. Попробуйте позже.`;
+    }
+    if (resp.status >= 400) {
+        return `Неправильный запрос: ${resp.statusText}. Приложение требует обновления.`;
+    }
     let respBody = await resp.json();
+    if (respBody.error) {
+        return respBody.error.message
+    }
     const token = respBody.csrf_token
 
     const prices = await fetch(cookieJar, "https://b2b.merlion.com/api/v1/pricelists", {
