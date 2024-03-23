@@ -31,7 +31,6 @@ export async function fetchMerlion(formData, filePath) {
         method: "GET",
         mode: "cors"
     });
-    console.info(prices.status)
     const pricesBody = await prices.json()
     const xlsm = pricesBody.data.data[0]['xlsm']
 
@@ -47,11 +46,13 @@ export async function fetchMerlion(formData, filePath) {
         mode: "cors"
     });
 
-    const downloadZipPath = filePath + '.zip';
+    console.info(priceResp.status)
+
+    const downloadZipPath = filePath + '.tmp.zip';
     const fileStream = fs.createWriteStream(downloadZipPath);
     const { body } = priceResp;
     await finished(body.pipe(fileStream))
-    const unzippedFileName = unzipSingleFile(downloadZipPath, filePath)
+    const unzippedFileName = await unzipSingleFile(downloadZipPath, filePath)
     fs.rmSync(downloadZipPath)
-    return unzippedFileName
+    return `Распакован ${unzippedFileName} в ${filePath}`
 }

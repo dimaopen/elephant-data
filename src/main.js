@@ -1,8 +1,8 @@
 import {fetchMerlion} from "./fetcher/merlion";
-
-const {app, BrowserWindow, ipcMain} = require('electron');
 import Store from 'electron-store';
 import os from 'os'
+
+const {app, BrowserWindow, ipcMain} = require('electron');
 
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -40,7 +40,7 @@ const providers = {
     'merlion': fetchMerlion,
 }
 
-function fetchProvider(event, provider, providerData) {
+async function fetchProvider(event, provider, providerData) {
     const providerFunction = providers[provider];
     if (!providerFunction)
         throw new Error(`No provider found for ${provider}`);
@@ -49,7 +49,7 @@ function fetchProvider(event, provider, providerData) {
     store.set('providers', providerSettings);
     const filePath = providerData.filePath
     delete providerData.filePath
-    providerFunction(providerData, filePath)
+    return await providerFunction(providerData, filePath)
 }
 
 async function saveFileDialog(event, curPath) {
