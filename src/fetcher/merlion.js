@@ -1,6 +1,7 @@
 import fs from "fs";
 import {finished} from "stream/promises";
 import {fetch, CookieJar} from "node-fetch-cookies";
+import {unzipSingleFile} from "./zipUtil";
 
 export async function fetchMerlion(formData, filePath) {
     const cookieJar = new CookieJar();
@@ -46,7 +47,11 @@ export async function fetchMerlion(formData, filePath) {
         mode: "cors"
     });
 
-    const fileStream = fs.createWriteStream(filePath);
+    const downloadZipPath = filePath + '.zip';
+    const fileStream = fs.createWriteStream(downloadZipPath);
     const { body } = priceResp;
     await finished(body.pipe(fileStream))
+    const unzippedFileName = unzipSingleFile(downloadZipPath, filePath)
+    fs.rmSync(downloadZipPath)
+    return unzippedFileName
 }
