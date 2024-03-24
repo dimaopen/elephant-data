@@ -8,5 +8,6 @@ contextBridge.exposeInMainWorld(
         getProviderSettings: () => ipcRenderer.invoke('get-provider-settings'),
         saveFileDialog: (curPath) => ipcRenderer.invoke('save-file-dialog', curPath),
         fetchProvider: (provider, formData) => ipcRenderer.invoke('fetch-provider', provider, formData),
+        openFile: (filePath) => ipcRenderer.invoke('open-file', filePath),
     }
 )

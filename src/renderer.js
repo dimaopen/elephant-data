@@ -35,9 +35,32 @@ function attachProviderToForm(providerId, func) {
             const form = document.getElementById(providerId)
             const formData = new FormData(form)
             const obj = Object.fromEntries(formData);
-            document.querySelector(`#footer`).textContent = `Скачиваем ${providerId} ...`
+            const footer = document.querySelector(`#footer`);
+            footer.replaceChildren();
+            footer.textContent = `Скачиваем ${providerId} ...`
             const result = await func(providerId, obj);
-            document.querySelector(`#footer`).textContent = `Скачали: ${result}`
+            if (result.error) {
+                footer.textContent = `Ошибка: ${result.error}`
+            } else {
+                var ol = document.createElement("ol");
+                footer.replaceChildren();
+                footer.textContent = 'Скачано'
+                footer.appendChild(ol)
+                const listElements = result.fileList.map(path => {
+                    var listItem = document.createElement("li");
+                    var link = document.createElement("a");
+                    link.href = `file://${path}`;
+                    link.onclick = (e) => {
+                        e.preventDefault();
+                        console.info(e.target.textContent)
+                        return window.electron.openFile(e.target.textContent);
+                    }
+                    link.textContent = path
+                    listItem.append(link);
+                    return listItem
+                })
+                ol.append(...listElements)
+            }
             e.target.disabled = false
         })
     document.querySelector(`#${providerId} button.file-path-btn`)
@@ -45,7 +68,6 @@ function attachProviderToForm(providerId, func) {
             e.preventDefault()
             const filePathInput = document.querySelector(`#${providerId} input[name='filePath']`);
             const result = await window.electron.saveFileDialog(filePathInput.value)
-            console.info(result)
             if (!result.canceled && result.filePath) {
                 filePathInput.value = result.filePath
             }

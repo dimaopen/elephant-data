@@ -2,7 +2,7 @@ import {fetchMerlion} from "./fetcher/merlion";
 import Store from 'electron-store';
 import os from 'os'
 
-const {app, BrowserWindow, ipcMain} = require('electron');
+const {app, BrowserWindow, ipcMain, shell} = require('electron');
 
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -53,7 +53,7 @@ async function fetchProvider(event, provider, providerData) {
         return await providerFunction(providerData, filePath)
     } catch (e) {
         console.error(e);
-        return e.message
+        return {error: e.message};
     }
 }
 
@@ -70,6 +70,11 @@ async function saveFileDialog(event, curPath) {
         });
 }
 
+function openFile(event, filePath) {
+    console.info('open file %s', filePath);
+    shell.openPath(filePath)
+}
+
 let mainWindow
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -81,6 +86,7 @@ app.on('ready', () => {
     }
     ipcMain.handle('get-provider-settings', getProviderSettings)
     ipcMain.handle('save-file-dialog', saveFileDialog)
+    ipcMain.handle('open-file', openFile)
     ipcMain.handle('fetch-provider', fetchProvider)
     mainWindow = createWindow()
 });

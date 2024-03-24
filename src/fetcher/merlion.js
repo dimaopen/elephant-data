@@ -63,5 +63,8 @@ export async function fetchMerlion(formData, filePath) {
     await finished(body.pipe(fileStream))
     const unzippedFileName = await unzipSingleFile(downloadZipPath, filePath)
     fs.rmSync(downloadZipPath)
-    return `Распакован ${unzippedFileName} в ${filePath}`
+    return {
+        message: unzippedFileName,
+        fileList: [filePath]
+    }
 }
